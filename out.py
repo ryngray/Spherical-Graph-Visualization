@@ -13,11 +13,13 @@ from math import cos, sin
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn import preprocessing
 
+folder="test4nodes/"
 
 def toCounterClockwise(x):
     s = 0
     i = 0
     while(i < len(x)-1):
+        # print(float(x[i][0]))
         #(x2-x1)(y2-y1)
         s += (float(x[i+1][0]) - float(x[i][0]))*(float(x[i+1][1]) + float(x[i][1]))
         i = i+2
@@ -65,7 +67,7 @@ for x in l:
             pass
         elif(a == 'c' or a == 'C'):
             if(type_prev == 'poly y'):
-                if(len(cluster)> 0):
+                if(len(cluster) > 0):
                     new_cluster = []
                     cluster = toCounterClockwise(cluster)
                     for i in cluster:
@@ -119,7 +121,7 @@ f.close()
 
 colors = colors[::2]
 colors = colors[:len(cluster_values)]
-with open('colors.txt', 'w') as f:
+with open(folder+'colors.txt', 'w') as f:
     f.write(str(colors))
 f.close()
 
@@ -138,7 +140,7 @@ for x in cluster_values:
         final_str = final_str + "[" + str(j[0]) + "," + str(j[1]) + "," + str(j[2]) + "],"
     final_str = final_str + "],\n"
 final_str = final_str+"]"
-with open("clusters.txt","w") as f:
+with open(folder+"clusters.txt","w") as f:
     f.write(final_str)
 f.close()
 
@@ -150,7 +152,7 @@ for x in Gc.edges():
 
 final_str = final_str + ']'
 
-with open("edges.txt", 'w') as f:
+with open(folder+"edges.txt", 'w') as f:
     f.write(final_str)
     
 f.close()
@@ -164,19 +166,19 @@ for x in range(len(Gc.nodes())):
     # if(test_coords[x][0] < 0.00000001):
     #     print(test_coords[x])
     # if(test_coords[x][1] < 0.00000001):
-    #     print(test_coords[x])   
-    b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+str(Gc.node[Gc.nodes()[x]]['pos3d'][0]) + "," + str(Gc.node[Gc.nodes()[x]]['pos3d'][1]) + ',' + str(Gc.node[Gc.nodes()[x]]['pos3d'][2])+']' + "},"
-    a = a + "["+str(Gc.node[Gc.nodes()[x]]['pos3d'][0]) + "," + str(Gc.node[Gc.nodes()[x]]['pos3d'][1]) + ',' + str(Gc.node[Gc.nodes()[x]]['pos3d'][2])+'],'
-    
+    #     print(test_coords[x])  
+    pos_vals =  str(Gc.node[Gc.nodes()[x]]['pos3d'][1:-1]).split(',')
+    b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+pos_vals[0] + "," + pos_vals[1] + ',' + pos_vals[2]+']' + "},"
+    a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
 a = a + ']'
 b = b + ']'
 
 
-with open("node_pos.txt", 'w') as f:
+with open(folder+"node_pos.txt", 'w') as f:
     f.write(a)
 f.close()
 
-with open("labels.txt", 'w') as f:
+with open(folder+"labels.txt", 'w') as f:
     f.write(b)
 f.close()
 
