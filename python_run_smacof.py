@@ -51,7 +51,7 @@ def rotate(l):
         l[x] = rotate_z(rotate_y(rotate_x(l[x],tx),ty),tz)
     return l
 
-g = pydotplus.graph_from_dot_file("lastfm_graph70.dot")
+g = pydotplus.graph_from_dot_file("test_graph_4nodes.dot")
 nx_graph = nx.from_pydot(g)
 Gc = max(nx.connected_component_subgraphs(nx_graph), key=len)
 

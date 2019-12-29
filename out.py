@@ -19,7 +19,6 @@ def toCounterClockwise(x):
     s = 0
     i = 0
     while(i < len(x)-1):
-        # print(float(x[i][0]))
         #(x2-x1)(y2-y1)
         s += (float(x[i+1][0]) - float(x[i][0]))*(float(x[i+1][1]) + float(x[i][1]))
         i = i+2
@@ -148,7 +147,14 @@ f.close()
 final_str = "["
 
 for x in Gc.edges():
-    final_str = final_str + "{from: "+str(Gc.node[x[0]]['id'])+", to: "+str(Gc.node[x[1]]['id'])+"},"
+#     print(Gc.node[x[0]])
+    start_node = str(Gc.node[x[0]]['label'])
+    end_node = str(Gc.node[x[1]]['label'])
+    if(start_node[0]!= '"'):
+        start_node = '"' + start_node + '"'
+    if(end_node[0]!='"'):
+        end_node = '"' + end_node + '"'
+    final_str = final_str + "{from: "+start_node+", to: "+end_node+"},"
 
 final_str = final_str + ']'
 
@@ -156,6 +162,18 @@ with open(folder+"edges.txt", 'w') as f:
     f.write(final_str)
     
 f.close()
+
+# final_str = "["
+
+# for x in Gc.edges():
+#     final_str = final_str + "{from: "+str(Gc.node[x[0]]['id'])+", to: "+str(Gc.node[x[1]]['id'])+"},"
+
+# final_str = final_str + ']'
+
+# with open(folder+"edges.txt", 'w') as f:
+#     f.write(final_str)
+    
+# f.close()
     
 # Print Label and Node location Values
 a = "["
