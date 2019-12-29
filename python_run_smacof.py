@@ -83,7 +83,8 @@ g_mat = 1.1 - g_mat/np.max(g_mat)
 g_mat = dijkstra(g_mat)
 # for x in g_mat:
 #     print(x)
-end = 1 - (g_mat/np.max(g_mat))
+# end = 1 - (g_mat/np.max(g_mat))
+end = g_mat
 np.fill_diagonal(end, 0)
 end = (end + end.T)/2
 
@@ -114,7 +115,7 @@ for i in range(len(coords2d)):
     # print("NEXT THING i")
     # print(Gc.nodes(data=True)[i][1]['label'])
     id_vals[Gc.nodes(data=True)[i][0]] = i
-    # id_vals[Gc.nodes(data=True)[i][0]] = str(Gc.nodes(data=True)[i][1]['label'])
+    label[Gc.nodes(data=True)[i][0]] = str(Gc.nodes(data=True)[i][1]['label'][1:-1])
     pos_vals[Gc.nodes(data=True)[i][0]] = str(coords2d[i][0])+","+str(coords2d[i][1])
     pos_vals3d[Gc.nodes(data=True)[i][0]] = str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
     h_vals[Gc.nodes(data=True)[i][0]] = 20
@@ -124,7 +125,7 @@ nx.set_node_attributes(Gc, values = h_vals, name = 'height')
 nx.set_node_attributes(Gc, values = w_vals, name = 'width')
 nx.set_node_attributes(Gc, values = id_vals, name = "id")
 nx.set_node_attributes(Gc, values = pos_vals3d, name = 'pos3d')
-# nx.set_node_attributes(Gc, values = label, name = 'label')
+nx.set_node_attributes(Gc, values = label, name = 'label')
 
 
 nx.drawing.nx_agraph.write_dot(Gc, "test.dot")
