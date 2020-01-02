@@ -1,1 +1,1 @@
-['#fbb4ae']
+['#fbb4ae', '#fbb4ae', '#fbb4ae', '#fbb4ae']
