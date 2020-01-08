@@ -42,6 +42,7 @@ def inv_stereo(v):
 print("Done clustering")
 
 
+
 g = pydotplus.graph_from_dot_file("test.dot")
 Gc = nx.from_pydot(g)
 
@@ -70,6 +71,8 @@ for x in l:
                     new_cluster = []
                     cluster = toCounterClockwise(cluster)
                     for i in cluster:
+                        i = np.asarray(i)#/np.linalg.norm(i)
+                        # i = [float(x)/np.linalg.norm(i) for x in i]
                         new_cluster.append(inv_stereo(i))
                     cluster_values.append(new_cluster)
                     unproj_vals.append(cluster)
@@ -81,6 +84,8 @@ for x in l:
                     new_cluster = []
                     cluster = toCounterClockwise(cluster)
                     for i in cluster:
+                        i = np.asarray(i)#/np.linalg.norm(i)
+                        i = i/np.linalg.norm(i)
                         new_cluster.append(inv_stereo(i))
                     cluster_values.append(new_cluster)
                     unproj_vals.append(cluster)
@@ -129,9 +134,13 @@ f.close()
 #         cluster_values[i][j] = cluster_values[i][j]/np.linalg.norm(cluster_values[i][j])
 
 #Print Cluster Values
+print("Cluster Length:", np.shape(cluster_values))
+print("Cluster 1 shape:", np.shape(cluster_values[0]))
+# print("Cluster 2 shape:", np.shape(cluster_values[1]))
 final_str = "["
 
 for x in cluster_values:
+    # print("Next Cluster Shape:", np.shape(x))
     if(x < 0.00000001):
         print(x)
     final_str = final_str+'['
@@ -185,7 +194,7 @@ for x in range(len(Gc.nodes())):
     #     print(test_coords[x])
     # if(test_coords[x][1] < 0.00000001):
     #     print(test_coords[x])  
-    pos_vals =  str(Gc.node[Gc.nodes()[x]]['pos3d'][1:-1]).split(',')
+    pos_vals =  str(Gc.node[Gc.nodes()[x]]['dim3pos'][1:-1]).split(',')
     b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+pos_vals[0] + "," + pos_vals[1] + ',' + pos_vals[2]+']' + "},"
     a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
 a = a + ']'

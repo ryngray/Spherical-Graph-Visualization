@@ -51,7 +51,7 @@ def rotate(l):
         l[x] = rotate_z(rotate_y(rotate_x(l[x],tx),ty),tz)
     return l
 
-g = pydotplus.graph_from_dot_file("test_graph_4nodes.dot")
+g = pydotplus.graph_from_dot_file("lastfm_graph70.dot")
 nx_graph = nx.from_pydot(g)
 Gc = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
@@ -88,15 +88,16 @@ end = g_mat
 np.fill_diagonal(end, 0)
 end = (end + end.T)/2
 
-
 res = smacofSphere.smacofSphere(end, itmax = 5000)
 
 
 coords = res[0]
 for i in range(len(coords)):
     coords[i] = coords[i]/np.linalg.norm(coords[i])
-coords = rotate(coords)
 
+
+
+coords = rotate(coords)
 
 coords2d = np.zeros([len(coords),2])
 
@@ -118,13 +119,13 @@ for i in range(len(coords2d)):
     label[Gc.nodes(data=True)[i][0]] = str(Gc.nodes(data=True)[i][1]['label'][1:-1])
     pos_vals[Gc.nodes(data=True)[i][0]] = str(coords2d[i][0])+","+str(coords2d[i][1])
     pos_vals3d[Gc.nodes(data=True)[i][0]] = str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
-    h_vals[Gc.nodes(data=True)[i][0]] = 20
-    w_vals[Gc.nodes(data=True)[i][0]] = 20
+    h_vals[Gc.nodes(data=True)[i][0]] = 0.001
+    w_vals[Gc.nodes(data=True)[i][0]] = 0.001
 nx.set_node_attributes(Gc, values = pos_vals, name = 'pos')
 nx.set_node_attributes(Gc, values = h_vals, name = 'height')
 nx.set_node_attributes(Gc, values = w_vals, name = 'width')
 nx.set_node_attributes(Gc, values = id_vals, name = "id")
-nx.set_node_attributes(Gc, values = pos_vals3d, name = 'pos3d')
+nx.set_node_attributes(Gc, values = pos_vals3d, name = 'dim3pos')
 nx.set_node_attributes(Gc, values = label, name = 'label')
 
 
