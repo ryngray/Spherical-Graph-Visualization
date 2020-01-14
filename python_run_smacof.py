@@ -58,23 +58,26 @@ Gc = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
 n_list = Gc.nodes()
 g_mat = np.ones(shape=(len(Gc.nodes()),len(Gc.nodes())))
-g_mat = 100*g_mat
+g_mat = -1*g_mat
 # Gc = max(nx.connected_component_subgraphs(dot_graph), key=len)
 # gmat = nx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path(Gc)
-g_mat = np.ones(shape=(len(Gc.nodes()),len(Gc.nodes())))
-g_mat = 100*g_mat
+# g_mat = np.ones(shape=(len(Gc.nodes()),len(Gc.nodes())))
+# g_mat = 100*g_mat
 n_list = list(Gc.nodes())
 for e in Gc.edges():
     try:
         #Graph is weighted
-        g_mat[n_list.index(e[0])][n_list.index(e[1])] = float(Gc.get_edge_data(e[0],e[1])[0]['weight'])
-        g_mat[n_list.index(e[1])][n_list.index(e[0])] = float(Gc.get_edge_data(e[1],e[0])[0]['weight'])
+        val = float(Gc.get_edge_data(e[0],e[1])[0]['weight'])
+        g_mat[n_list.index(e[0])][n_list.index(e[1])] = val
+        g_mat[n_list.index(e[1])][n_list.index(e[0])] = val
     except:
         #Graph is unweighted
         g_mat[n_list.index(e[0])][n_list.index(e[1])] = 1.0
         g_mat[n_list.index(e[1])][n_list.index(e[0])] = 1.0
 g_mat = np.asarray(g_mat)
-g_mat = 1.1 - g_mat/np.max(g_mat)
+g_mat = g_mat/np.max(g_mat)
+g_mat = 1.1 - g_mat
+g_mat[g_mat > 1] = 1
 
 
 
@@ -116,7 +119,12 @@ for i in range(len(coords2d)):
     # print("NEXT THING i")
     # print(Gc.nodes(data=True)[i][1]['label'])
     id_vals[Gc.nodes(data=True)[i][0]] = i
-    label[Gc.nodes(data=True)[i][0]] = str(Gc.nodes(data=True)[i][1]['label'][1:-1])
+    ltemp = str(Gc.nodes(data=True)[i][1]['label'])
+    if(ltemp[0] == '"'):
+        ltemp = ltemp[1:-1]
+    if(ltemp[0] == '"'):
+        ltemp = ltemp[1:-1]
+    label[Gc.nodes(data=True)[i][0]] = ltemp
     pos_vals[Gc.nodes(data=True)[i][0]] = str(coords2d[i][0])+","+str(coords2d[i][1])
     pos_vals3d[Gc.nodes(data=True)[i][0]] = str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
     h_vals[Gc.nodes(data=True)[i][0]] = 0.001

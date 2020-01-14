@@ -42,7 +42,6 @@ def inv_stereo(v):
 print("Done clustering")
 
 
-
 g = pydotplus.graph_from_dot_file("test.dot")
 Gc = nx.from_pydot(g)
 
@@ -134,8 +133,6 @@ f.close()
 #         cluster_values[i][j] = cluster_values[i][j]/np.linalg.norm(cluster_values[i][j])
 
 #Print Cluster Values
-print("Cluster Length:", np.shape(cluster_values))
-print("Cluster 1 shape:", np.shape(cluster_values[0]))
 # print("Cluster 2 shape:", np.shape(cluster_values[1]))
 final_str = "["
 
