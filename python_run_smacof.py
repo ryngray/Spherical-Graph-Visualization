@@ -51,7 +51,7 @@ def rotate(l):
         l[x] = rotate_z(rotate_y(rotate_x(l[x],tx),ty),tz)
     return l
 
-g = pydotplus.graph_from_dot_file("lastfm_graph70.dot")
+g = pydotplus.graph_from_dot_file("colors_real.dot")
 nx_graph = nx.from_pydot(g)
 Gc = max(nx.connected_component_subgraphs(nx_graph), key=len)
 
@@ -59,10 +59,6 @@ Gc = max(nx.connected_component_subgraphs(nx_graph), key=len)
 n_list = Gc.nodes()
 g_mat = np.ones(shape=(len(Gc.nodes()),len(Gc.nodes())))
 g_mat = -1*g_mat
-# Gc = max(nx.connected_component_subgraphs(dot_graph), key=len)
-# gmat = nx.algorithms.shortest_paths.unweighted.all_pairs_shortest_path(Gc)
-# g_mat = np.ones(shape=(len(Gc.nodes()),len(Gc.nodes())))
-# g_mat = 100*g_mat
 n_list = list(Gc.nodes())
 for e in Gc.edges():
     try:
@@ -98,15 +94,26 @@ coords = res[0]
 for i in range(len(coords)):
     coords[i] = coords[i]/np.linalg.norm(coords[i])
 
+best_coords = coords.copy()
+
+size = 100
+
+for i in range(1000):
+
+	coords = rotate(coords)
+
+	coords2d = np.zeros([len(coords),2])
+
+	for x in range(len(coords)):
+	        coords2d[x] = stereo(coords[x])
+	#         print(np.linalg.norm(coords2d[x]))
+	xy_sizes = np.amax(coords2d, 0 ) - np.amin(coords2d, 0)
+	if(xy_sizes[0]*xy_sizes[1] < size):
+		size = xy_sizes[0]*xy_sizes[1]
+		print(size)
+		best_coords = coords2d.copy()
 
 
-coords = rotate(coords)
-
-coords2d = np.zeros([len(coords),2])
-
-for x in range(len(coords)):
-        coords2d[x] = stereo(coords[x])
-#         print(np.linalg.norm(coords2d[x]))
 
 
 pos_vals = {}
@@ -115,26 +122,55 @@ w_vals = {}
 id_vals = {}
 pos_vals3d = {}
 label = {}
+col = {}
+fcol = {}
+fname = {}
+style = {}
+
+gmap_output = False
+
+graph = "color"
+
 for i in range(len(coords2d)):
     # print("NEXT THING i")
     # print(Gc.nodes(data=True)[i][1]['label'])
     id_vals[Gc.nodes(data=True)[i][0]] = i
-    ltemp = str(Gc.nodes(data=True)[i][1]['label'])
+    if(graph == "lastfm"):
+        ltemp = str(Gc.nodes(data=True)[i][1]['label'])
+    elif(graph == "color"):
+        ltemp = Gc.nodes()[i]
     if(ltemp[0] == '"'):
         ltemp = ltemp[1:-1]
     if(ltemp[0] == '"'):
         ltemp = ltemp[1:-1]
     label[Gc.nodes(data=True)[i][0]] = ltemp
-    pos_vals[Gc.nodes(data=True)[i][0]] = str(coords2d[i][0])+","+str(coords2d[i][1])
-    pos_vals3d[Gc.nodes(data=True)[i][0]] = str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
-    h_vals[Gc.nodes(data=True)[i][0]] = 0.001
-    w_vals[Gc.nodes(data=True)[i][0]] = 0.001
+    if(gmap_output):
+        pos_vals[Gc.nodes(data=True)[i][0]] = str(100*coords2d[i][0])+","+str(100*coords2d[i][1])#str(coords2d[i][0])+","+str(coords2d[i][1])
+        pos_vals3d[Gc.nodes(data=True)[i][0]] = str(100*coords[i][0])+","+str(100*coords[i][1])+","+str(100*coords[i][2])#str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
+        h_vals[Gc.nodes(data=True)[i][0]] = 1
+        w_vals[Gc.nodes(data=True)[i][0]] = 1
+    else:
+        curr_node = Gc.nodes(data=True)[i][0]
+        pos_vals[curr_node] = str(coords2d[i][0])+","+str(coords2d[i][1])#str(coords2d[i][0])+","+str(coords2d[i][1])
+        pos_vals3d[Gc.nodes(data=True)[i][0]] = str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])#str(coords[i][0])+","+str(coords[i][1])+","+str(coords[i][2])
+        h_vals[Gc.nodes(data=True)[i][0]] = 0.001
+        w_vals[Gc.nodes(data=True)[i][0]] = 0.001
+        if(graph == "color"):
+            col[curr_node] = Gc.nodes(data=True)[i][1]['color'][1:-1]
+            fcol[curr_node] = Gc.nodes(data=True)[i][1]['fontcolor'][1:-1]
+            fname[curr_node] = Gc.nodes(data=True)[i][1]['fontname'][1:-1]
+            style[curr_node] = Gc.nodes(data=True)[i][1]['style'][1:-1]
 nx.set_node_attributes(Gc, values = pos_vals, name = 'pos')
 nx.set_node_attributes(Gc, values = h_vals, name = 'height')
 nx.set_node_attributes(Gc, values = w_vals, name = 'width')
 nx.set_node_attributes(Gc, values = id_vals, name = "id")
 nx.set_node_attributes(Gc, values = pos_vals3d, name = 'dim3pos')
 nx.set_node_attributes(Gc, values = label, name = 'label')
+if(graph == "color"):
+    nx.set_node_attributes(Gc, values = col, name = "color")
+    nx.set_node_attributes(Gc, values = fcol, name = 'fontcolor')
+    nx.set_node_attributes(Gc, values = fname, name = 'fontname')
+    nx.set_node_attributes(Gc, values = style, name =  'style')
 
 
 nx.drawing.nx_agraph.write_dot(Gc, "test.dot")

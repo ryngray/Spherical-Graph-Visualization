@@ -13,7 +13,7 @@ from math import cos, sin
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn import preprocessing
 
-folder="test4nodes/"
+folder="colors/"
 
 def toCounterClockwise(x):
     s = 0
@@ -54,6 +54,8 @@ pt = []
 type_prev = ''
 unproj_vals = []
 
+twodpoints = []
+
 ma = 0
 mi = 1000
 
@@ -73,6 +75,7 @@ for x in l:
                         i = np.asarray(i)#/np.linalg.norm(i)
                         # i = [float(x)/np.linalg.norm(i) for x in i]
                         new_cluster.append(inv_stereo(i))
+                    twodpoints.append(cluster)
                     cluster_values.append(new_cluster)
                     unproj_vals.append(cluster)
                     cluster = []
@@ -149,6 +152,23 @@ with open(folder+"clusters.txt","w") as f:
     f.write(final_str)
 f.close()
 
+#Print Cluster Values
+# print("Cluster 2 shape:", np.shape(cluster_values[1]))
+final_str = "["
+
+for x in twodpoints:
+    # print("Next Cluster Shape:", np.shape(x))
+    if(x < 0.00000001):
+        print(x)
+    final_str = final_str+'['
+    for j in x:
+        final_str = final_str + "[" + str(j[0]) + "," + str(j[1]) + "],"
+    final_str = final_str + "],\n"
+final_str = final_str+"]"
+with open(folder+"clusters2d.txt","w") as f:
+    f.write(final_str)
+f.close()
+
 #Print Edge Values
 final_str = "["
 
@@ -192,7 +212,8 @@ for x in range(len(Gc.nodes())):
     # if(test_coords[x][1] < 0.00000001):
     #     print(test_coords[x])  
     pos_vals =  str(Gc.node[Gc.nodes()[x]]['dim3pos'][1:-1]).split(',')
-    b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+pos_vals[0] + "," + pos_vals[1] + ',' + pos_vals[2]+']' + "},"
+    pos2d = str(Gc.node[Gc.nodes()[x]]['pos'][1:-1]).split(',')
+    b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+pos_vals[0] + "," + pos_vals[1] + ',' + pos_vals[2]+']' + ", pos2d: ["+pos2d[0] + "," + pos2d[1]+"]"+ "},"
     a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
 a = a + ']'
 b = b + ']'
