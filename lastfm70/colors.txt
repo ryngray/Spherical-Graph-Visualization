@@ -1,1 +1,1 @@
-['#fed9a6', '#fbb4ae', '#b3cde3', '#ccebc5', '#b3cde3', '#decbe4']
+['#decbe4', '#ccebc5', '#fbb4ae', '#fed9a6', '#b3cde3']
