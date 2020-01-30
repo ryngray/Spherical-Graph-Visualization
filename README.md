@@ -7,3 +7,5 @@ SphereTestBaby folder is the code that uses the baby step data (Test4Nodes), whi
 
 SphereTest18 uses the latest data (not the baby steps data). Run to visually check the issues in clusters.
 
+LastFMforPaper has all scenarios of plot. Each is a independent project. The SphereLastFMFinal is the the formal one.
+
