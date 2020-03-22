@@ -71,9 +71,9 @@ for e in Gc.edges():
         g_mat[n_list.index(e[0])][n_list.index(e[1])] = 1.0
         g_mat[n_list.index(e[1])][n_list.index(e[0])] = 1.0
 g_mat = np.asarray(g_mat)
-g_mat = g_mat/np.max(g_mat)
-g_mat = 1.1 - g_mat
-g_mat[g_mat > 1] = 1
+#g_mat = g_mat/np.max(g_mat)
+#g_mat = 1.1 - g_mat
+#g_mat[g_mat > 1] = 1
 
 
 
