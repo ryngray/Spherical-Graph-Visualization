@@ -9,12 +9,12 @@ from scipy.spatial.distance import pdist, squareform
 from scipy.sparse.csgraph import dijkstra
 import smacofSphere
 import matplotlib.pyplot as plt
-from math import cos, sin
+from math import cos, sin, sqrt
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn import preprocessing
 import sys
 
-name = "output"
+name = "../SphereTest19"
 folder=name+"/"
 
 def toCounterClockwise(x):
@@ -41,6 +41,23 @@ def inv_stereo(v):
     y = float(v[1])
     return preprocessing.normalize(np.asarray([(2*x)/(1+x**2+y**2), (2*y)/(1+x**2+y**2), (x**2+y**2-1)/(1+x**2+y**2)]).reshape(1, -1), norm='l2')[0]
    
+
+def Lamberts(v):
+    v = np.asarray(v)
+    x,y,z = v/sqrt((v[0]**2 + v[1]**2+v[2]**2))
+    x1 = sqrt(2/(1-z))*x
+    y1 = sqrt(2/(1-z))*y
+    return np.asarray([x1, y1])
+
+def inv_Lamberts(v):
+    x = float(v[0])
+    y = float(v[1])
+    n = sqrt(x**2+y**2)
+    x = x/n
+    y = y/n
+    return np.asarray([sqrt(1-(x**2 + y**2)/4)*x, sqrt(1-(x**2 + y**2)/4)*y, (x**2+y**2)/2-1])
+
+
 print("Done clustering")
 
 
@@ -91,6 +108,7 @@ for x in l:
                         i = np.asarray(i)#/np.linalg.norm(i)
                         i = i/np.linalg.norm(i)
                         new_cluster.append(inv_stereo(i))
+                    twodpoints.append(cluster)
                     cluster_values.append(new_cluster)
                     unproj_vals.append(cluster)
                     cluster = []
@@ -121,11 +139,16 @@ for x in l:
             if(float(a) < mi):
                 mi = float(a)
             pt.append(a)
-#             pt = inv_stereo(toCounterClockwise(pt))
+#             pt = inv_Lamberts(toCounterClockwise(pt))
             cluster.append(pt)
             pt = []
             type_prev = 'poly y'
 f.close()
+
+
+
+
+
 
 colors = colors[::2]
 colors = colors[:len(cluster_values)]
@@ -139,7 +162,7 @@ f.close()
 
 #Print Cluster Values
 # print("Cluster 2 shape:", np.shape(cluster_values[1]))
-final_str = "["
+final_str = "g_clusters = ["
 
 for x in cluster_values:
     # print("Next Cluster Shape:", np.shape(x))
@@ -149,14 +172,14 @@ for x in cluster_values:
     for j in x:
         final_str = final_str + "[" + str(j[0]) + "," + str(j[1]) + "," + str(j[2]) + "],"
     final_str = final_str + "],\n"
-final_str = final_str+"]"
-with open(folder+"clusters.txt","w") as f:
-    f.write(final_str)
-f.close()
+final_str = final_str+"]\n"
+# with open(folder+"clusters.txt","w") as f:
+#     f.write(final_str)
+# f.close()
 
 #Print Cluster Values
 # print("Cluster 2 shape:", np.shape(cluster_values[1]))
-final_str = "["
+final_str += "g_clusters2d = ["
 
 for x in twodpoints:
     # print("Next Cluster Shape:", np.shape(x))
@@ -166,30 +189,33 @@ for x in twodpoints:
     for j in x:
         final_str = final_str + "[" + str(j[0]) + "," + str(j[1]) + "],"
     final_str = final_str + "],\n"
-final_str = final_str+"]"
-with open(folder+"clusters2d.txt","w") as f:
-    f.write(final_str)
-f.close()
+final_str = final_str+"]\n"
+# with open(folder+"clusters2d.txt","w") as f:
+#     f.write(final_str)
+# f.close()
 
 #Print Edge Values
-final_str = "["
+final_str += "g_edges = ["
 
 for x in Gc.edges():
-#     print(Gc.node[x[0]])
-    start_node = str(Gc.node[x[0]]['label'])
-    end_node = str(Gc.node[x[1]]['label'])
+    try:
+        start_node = str(Gc.node[x[0]]['label'])
+        end_node = str(Gc.node[x[1]]['label'])
+    except:
+        start_node = str(x[0])
+        end_node = str(x[1])
     if(start_node[0]!= '"'):
         start_node = '"' + start_node + '"'
     if(end_node[0]!='"'):
         end_node = '"' + end_node + '"'
     final_str = final_str + "{from: "+start_node+", to: "+end_node+"},"
 
-final_str = final_str + ']'
+final_str = final_str + ']\n'
 
-with open(folder+"edges.txt", 'w') as f:
-    f.write(final_str)
+# with open(folder+"edges.txt", 'w') as f:
+#     f.write(final_str)
     
-f.close()
+# f.close()
 
 # final_str = "["
 
@@ -202,9 +228,9 @@ f.close()
 #     f.write(final_str)
 
 
-a = "["
+# a = "["
 
-b = "["
+final_str += "g_labels = ["
 
 for x in range(len(Gc.nodes())):
     # if(test_coords[x][0] < 0.00000001):
@@ -215,20 +241,20 @@ for x in range(len(Gc.nodes())):
     pos_vals =  str(Gc.node[Gc.nodes()[x]]['dim3pos'][1:-1]).split(',')
     pos2d = str(Gc.node[Gc.nodes()[x]]['pos'][1:-1]).split(',')
     pos_test = inv_stereo(pos2d)
-    b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+str(pos_test[0]) + "," + str(pos_test[1]) + ',' + str(pos_test[2])+']' + ", pos2d: ["+pos2d[0] + "," + pos2d[1]+ "]},"
+    final_str = final_str + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label'][1:-1]) + '", pos: ['+str(pos_test[0]) + "," + str(pos_test[1]) + ',' + str(pos_test[2])+']' + ", pos2d: ["+pos2d[0] + "," + pos2d[1]+ "]},"
     # b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+str(temp_pos[x][0]) + "," + str(temp_pos[x][1]) + ',' + str(temp_pos[x][2])+']'  + "},"
 
-    a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
-a = a + ']'
-b = b + ']'
+    # a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
+# a = a + ']'
+final_str = final_str + ']'
 
 
-with open(folder+"node_pos.txt", 'w') as f:
-    f.write(a)
-f.close()
+# with open(folder+"node_pos.txt", 'w') as f:
+#     f.write(a)
+# f.close()
 
-with open(folder+"labels.txt", 'w') as f:
-    f.write(b)
+with open(folder+"output.js", 'w') as f:
+    f.write(final_str)
 f.close()
 
 

@@ -41,6 +41,12 @@ def smacofSphere(delta, ndim = 3, mds = "ratio", alg = "dual",
         normdiag = np.diag(np.sqrt(values[0:p]))
         x = np.matmul(vectors[:, 0:p], normdiag)
 
+    
+    elif (init == "random"):
+        vectors = np.random.randn(n, 3);
+        x = np.asarray(vectors)/np.linalg.norm(vectors,axis=0)
+
+
     xstart = x
     if relax:
         relax = 2
