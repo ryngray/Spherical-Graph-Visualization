@@ -61,7 +61,6 @@ def smacofSphere(delta, ndim = 3, mds = "ratio", alg = "dual",
     dhat1 = squareform(np.insert(np.insert(squareform(dhat, 'tomatrix'), 0, 0, axis=1), 0, 0, axis=0), 'tovector')  
     dhat2 = np.multiply(np.mean(np.sqrt(np.sum(np.square(x), axis=1))), wghts2)
     
-    #Why are n1 and nn1 necessary? 
     n1 = len(squareform(dhat1, 'tomatrix'))
     nn1 = n1 * (n1 - 1)/2
     x = np.insert(x, 0, 0, axis=0)
@@ -109,6 +108,7 @@ def smacofSphere(delta, ndim = 3, mds = "ratio", alg = "dual",
     y = y - ss
     y = y[1:delta.shape[0] + 1]
     stress = np.sqrt(snon/nn)
+    print("Number of iterations:", itel)
     return (y, stress)
     
 

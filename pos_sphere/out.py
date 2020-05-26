@@ -34,13 +34,19 @@ def stereo(v):
 #     R = np.linalg.norm([x,y,z])
 #     x,y,z = preprocessing.normalize(np.asarray(v).reshape(1, -1), norm='l2')[0]
     x,y,z = np.asarray(v)
-    return np.asarray([x/(1-z), y/(1-z)]).reshape(1,-1)
+    R = np.linalg.norm([x,y,z])
+    x = x/R
+    y = y/R
+    z = z/R
+    return np.asarray([x/(1-z), y/(1-z)])
     
 def inv_stereo(v):
     x = float(v[0])
     y = float(v[1])
-    return preprocessing.normalize(np.asarray([(2*x)/(1+x**2+y**2), (2*y)/(1+x**2+y**2), (x**2+y**2-1)/(1+x**2+y**2)]).reshape(1, -1), norm='l2')[0]
-   
+    return np.asarray([(2*x)/(1+x**2+y**2), (2*y)/(1+x**2+y**2), (x**2+y**2-1)/(1+x**2+y**2)])
+
+#     return [(2*x)/(1+x**2+y**2), (2*y)/(1+x**2+y**2), (x**2+y**2-1)/(1+x**2+y**2)]
+
 
 def Lamberts(v):
     v = np.asarray(v)
@@ -241,7 +247,10 @@ for x in range(len(Gc.nodes())):
     pos_vals =  str(Gc.node[Gc.nodes()[x]]['dim3pos'][1:-1]).split(',')
     pos2d = str(Gc.node[Gc.nodes()[x]]['pos'][1:-1]).split(',')
     pos_test = inv_stereo(pos2d)
-    final_str = final_str + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label'][1:-1]) + '", pos: ['+str(pos_test[0]) + "," + str(pos_test[1]) + ',' + str(pos_test[2])+']' + ", pos2d: ["+pos2d[0] + "," + pos2d[1]+ "]},"
+    label = str(Gc.node[Gc.nodes()[x]]['label'])
+    if(label[0] == '"'):
+        label = label[1:-1]
+    final_str = final_str + '{label: "' + label + '", pos: ['+str(pos_vals[0]) + "," + str(pos_vals[1]) + ',' + str(pos_vals[2])+']' + ", pos2d: ["+pos2d[0] + "," + pos2d[1]+ "]},"
     # b = b + '{label: "' + str(Gc.node[Gc.nodes()[x]]['label']) + '", pos: ['+str(temp_pos[x][0]) + "," + str(temp_pos[x][1]) + ',' + str(temp_pos[x][2])+']'  + "},"
 
     # a = a + "["+pos_vals[0] + "," + pos_vals[1] + ',' +pos_vals[2]+'],'
