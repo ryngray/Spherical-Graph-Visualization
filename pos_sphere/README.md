@@ -1,7 +1,11 @@
 To run the code, simply use
-> ./pipeline.sh file.dot
+> ./pipeline.sh file.dot [0,1]
 
-This runs 'python_run_smacof.py', the clustering (currently modularity), and then 'out.py'.  This will output files in a folder called "output"
+file.dot is the dot file associated with the graph.  Please note that if it is a weighted graph, the weights must be under the variable name 'weight' or it will assume an unweighted graph.
+
+The second argument determines whether or not similarities or dissimilarities are stored.  If it is similarities, use 1, if it is disimilarities use 0.
+
+The command will run 'python_run_smacof.py', the clustering (currently modularity), and then 'out.py'.  This will output files in SphereTest19 as 'output.js'.  From there, the visualization can be seen using index.html.
 
 > python_run_smacof.py
 
